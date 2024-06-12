@@ -3,12 +3,13 @@ module StripeMock
     module Customers
 
       def Customers.included(klass)
-        klass.add_handler 'post /v1/customers',                     :new_customer
-        klass.add_handler 'post /v1/customers/([^/]*)',             :update_customer
-        klass.add_handler 'get /v1/customers/([^/]*)',              :get_customer
-        klass.add_handler 'delete /v1/customers/([^/]*)',           :delete_customer
-        klass.add_handler 'get /v1/customers',                      :list_customers
-        klass.add_handler 'delete /v1/customers/([^/]*)/discount',  :delete_customer_discount
+        klass.add_handler 'post /v1/customers',                        :new_customer
+        klass.add_handler 'post /v1/customers/([^/]*)',                :update_customer
+        klass.add_handler 'get /v1/customers/([^/]*)',                 :get_customer
+        klass.add_handler 'delete /v1/customers/([^/]*)',              :delete_customer
+        klass.add_handler 'get /v1/customers',                         :list_customers
+        klass.add_handler 'delete /v1/customers/([^/]*)/discount',     :delete_customer_discount
+        klass.add_handler 'get /v1/customers/([^/]+)/payment_methods', :list_payment_methods
       end
 
       def new_customer(route, method_url, params, headers)
@@ -148,6 +149,22 @@ module StripeMock
         cus[:discount] = nil
 
         cus
+      end
+
+      def list_payment_methods(route, method_url, params, headers)
+        params[:offset] ||= 0
+        params[:limit] ||= 10
+
+        stripe_account = headers && headers[:stripe_account] || Stripe.api_key
+        route =~ method_url
+        cus = assert_existence :customer, $1, customers[stripe_account][$1]
+
+        result = payment_methods.values.select { |v| v[:customer] == $1 }
+
+        # Sources are treated as payment methods:
+        result = cus[:sources][:data] + result
+
+        Data.mock_list_object(result, params)
       end
     end
   end
