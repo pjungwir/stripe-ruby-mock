@@ -105,9 +105,7 @@ module StripeMock
       private
 
       def ensure_payment_method_required_params(params)
-        require_param(:type) if params[:type].nil?
-
-        if invalid_type?(params[:type])
+        if !params[:type].nil? && invalid_type?(params[:type])
           raise Stripe::InvalidRequestError.new(
             'Invalid type: must be one of card, ideal or sepa_debit',
             nil,

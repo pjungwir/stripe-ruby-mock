@@ -1297,7 +1297,7 @@ module StripeMock
     def self.mock_payment_method(params = {})
       payment_method_id = params[:id] || 'pm_1ExEuFL2DI6wht39WNJgbybl'
 
-      type = params[:type].to_sym
+      type = params[:type]&.to_sym
       last4 = params.dig(:card, :number)
       data = {
         card: {
@@ -1339,7 +1339,7 @@ module StripeMock
         }
       }
 
-      {
+      ret = {
         id: payment_method_id,
         object: 'payment_method',
         type: params[:type],
@@ -1360,7 +1360,9 @@ module StripeMock
         metadata: {
           order_id: '123456789'
         }
-      }.merge(params).merge(type => data[type])
+      }.merge(params)
+      ret = ret.merge(type => data[type]) unless type.nil?
+      ret
     end
 
     def self.mock_setup_intent(params = {})
