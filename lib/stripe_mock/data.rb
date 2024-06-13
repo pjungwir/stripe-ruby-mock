@@ -1259,13 +1259,6 @@ module StripeMock
           canceled_at: nil,
           cancellation_reason: nil,
           capture_method: "automatic",
-          charges: {
-              object: "list",
-              data: [],
-              has_more: false,
-              total_count: 1,
-              url: "/v1/charges?payment_intent=pi_1EwXFB2eZvKYlo2CggNnFBo8"
-          },
           client_secret: "pi_1EwXFB2eZvKYlo2CggNnFBo8_secret_vOMkpqZu8ca7hxhfiO80tpT3v",
           confirmation_method: "manual",
           created: 1563208901,
@@ -1274,6 +1267,7 @@ module StripeMock
           description: nil,
           invoice: nil,
           last_payment_error: nil,
+          latest_charge: nil,
           livemode: false,
           metadata: {},
           next_action: { type: "use_stripe_sdk" },
